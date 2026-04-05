@@ -24,3 +24,12 @@ def test_get_staged_diff_calls_git_correctly():
             capture_output=True,
             text=True,
         )
+
+
+def test_get_staged_diff_handles_empty_output():
+    with patch("subprocess.run") as mock_run:
+        mock_run.return_value = MagicMock(stdout="", stderr="", returncode=0)
+
+        result = get_staged_diff()
+
+        assert result == ""
