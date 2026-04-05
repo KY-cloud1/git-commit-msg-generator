@@ -118,3 +118,12 @@ def test_main_with_failure():
                 main()
 
                 mock_print.assert_any_call("Failed to generate commit message.")
+
+
+def test_main_copies_to_clipboard():
+    with patch("pyperclip.copy") as mock_copy:
+        with patch("git_commit_generator.generate_commit_message", return_value="feat: test"):
+            with patch("git_commit_generator.get_staged_diff", return_value="diff"):
+                main()
+
+                mock_copy.assert_called_once_with("feat: test")

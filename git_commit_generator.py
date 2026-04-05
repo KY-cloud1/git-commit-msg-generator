@@ -1,4 +1,6 @@
 import subprocess
+
+import pyperclip
 from openai import OpenAI
 
 
@@ -105,6 +107,13 @@ def main():
 
     print("\nSuggested commit message:\n")
     print(message)
+
+    # Copy suggested commit message to clipboard.
+    try:
+        pyperclip.copy(message)
+        print("\nCopied to clipboard.")
+    except Exception as e:
+        print(f"\nFailed to copy to clipboard: {e}")
 
 
 if __name__ == "__main__":
