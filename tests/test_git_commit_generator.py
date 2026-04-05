@@ -1,5 +1,5 @@
 from unittest.mock import MagicMock, patch
-from main import get_staged_diff, generate_commit_message, main
+from git_commit_generator import get_staged_diff, generate_commit_message, main
 
 
 def test_get_staged_diff_returns_stdout():
