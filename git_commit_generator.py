@@ -30,25 +30,30 @@ def generate_commit_message(diff):
     The api_key is required by the client library but ignored
     by the local server — any non-empty string works.
 
-    Returns the generated message as a string.
+    Returns the generated message as a string, or None on failure.
     """
     client = OpenAI(base_url=BASE_URL, api_key="not-needed")
 
-    response = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=[
-            {
-                "role": "system",
-                "content": "You are an expert software engineer.",
-            },
-            {
-                "role": "user",
-                "content": (
-                    "Write a concise git commit message based on the following diff.\n\n"
-                    f"Diff:\n{diff}"
-                ),
-            },
-        ],
-    )
+    try:
+        response = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are an expert software engineer.",
+                },
+                {
+                    "role": "user",
+                    "content": (
+                        "Write a concise git commit message based on the following diff.\n\n"
+                        f"Diff:\n{diff}"
+                    ),
+                },
+            ],
+            timeout=45,
+        )
+        return response.choices[0].message.content
 
-    return response.choices[0].message.content
+    except Exception as e:
+        print(f"Error: {type(e).__name__} - {e}")
+        return None

@@ -65,3 +65,15 @@ def test_generate_commit_message_sends_messages():
         args, kwargs = mock_client.chat.completions.create.call_args
         assert "messages" in kwargs
         assert len(kwargs["messages"]) == 2
+
+
+def test_generate_commit_message_exception():
+    with patch("main.OpenAI") as mock_openai:
+        mock_client = MagicMock()
+        mock_openai.return_value = mock_client
+
+        mock_client.chat.completions.create.side_effect = Exception("error")
+
+        result = generate_commit_message("diff")
+
+        assert result is None
