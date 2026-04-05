@@ -28,8 +28,14 @@ def get_staged_diff():
         capture_output=True,
         text=True,
     )
+
+    # Handle git failure explicitly
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"git diff failed with return code {result.returncode}: {result.stderr}"
+        )
+
     diff = result.stdout
-    
     return diff
 
 
@@ -80,7 +86,11 @@ def generate_commit_message(diff):
 
 def main():
     # Get the diff of everything currently staged with `git add`.
-    diff = get_staged_diff()
+    try:
+        diff = get_staged_diff()
+    except Exception as e:
+        print(f"Error getting git diff: {e}")
+        return
 
     # Nothing staged — no point sending an empty diff.
     if not diff.strip():

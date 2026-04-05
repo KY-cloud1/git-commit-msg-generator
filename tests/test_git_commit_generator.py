@@ -35,6 +35,21 @@ def test_get_staged_diff_handles_empty_output():
         assert result == ""
 
 
+def test_get_staged_diff_git_failure():
+    with patch("subprocess.run") as mock_run:
+        mock_run.return_value = MagicMock(
+            stdout="",
+            stderr="git error",
+            returncode=1
+        )
+
+        try:
+            get_staged_diff()
+            assert False, "Expected RuntimeError"
+        except RuntimeError as e:
+            assert "git diff failed" in str(e)
+
+
 def test_generate_commit_message_success():
     expected_message = "feat: add feature"
 
