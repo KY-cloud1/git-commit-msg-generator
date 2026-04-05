@@ -38,13 +38,13 @@ def test_get_staged_diff_handles_empty_output():
 def test_generate_commit_message_success():
     expected_message = "feat: add feature"
 
-    with patch("git_commit_generator.OpenAI") as mock_openai:
-        mock_client = MagicMock()
-        mock_openai.return_value = mock_client
-
-        mock_client.chat.completions.create.return_value = MagicMock(
+    with patch("git_commit_generator.client") as mock_client:
+        mock_create = MagicMock()
+        mock_create.return_value = MagicMock(
             choices=[MagicMock(message=MagicMock(content=expected_message))]
         )
+
+        mock_client.chat.completions.create = mock_create
 
         result = generate_commit_message("diff")
 
@@ -52,27 +52,27 @@ def test_generate_commit_message_success():
 
 
 def test_generate_commit_message_sends_messages():
-    with patch("git_commit_generator.OpenAI") as mock_openai:
-        mock_client = MagicMock()
-        mock_openai.return_value = mock_client
-
-        mock_client.chat.completions.create.return_value = MagicMock(
+    with patch("git_commit_generator.client") as mock_client:
+        mock_create = MagicMock()
+        mock_create.return_value = MagicMock(
             choices=[MagicMock(message=MagicMock(content="msg"))]
         )
 
+        mock_client.chat.completions.create = mock_create
+
         generate_commit_message("diff")
 
-        args, kwargs = mock_client.chat.completions.create.call_args
+        args, kwargs = mock_create.call_args
         assert "messages" in kwargs
         assert len(kwargs["messages"]) == 2
 
 
 def test_generate_commit_message_exception():
-    with patch("git_commit_generator.OpenAI") as mock_openai:
-        mock_client = MagicMock()
-        mock_openai.return_value = mock_client
+    with patch("git_commit_generator.client") as mock_client:
+        mock_create = MagicMock()
+        mock_create.side_effect = Exception("error")
 
-        mock_client.chat.completions.create.side_effect = Exception("error")
+        mock_client.chat.completions.create = mock_create
 
         result = generate_commit_message("diff")
 

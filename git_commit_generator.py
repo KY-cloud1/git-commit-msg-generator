@@ -11,6 +11,10 @@ MODEL_NAME = "Qwen3.5-9B-Q4_K_M.gguf"
 # The OpenAI client will append /chat/completions to this.
 BASE_URL = "http://127.0.0.1:8080/v1"
 
+# Point the OpenAI client at our local llama-server instead
+# of OpenAI's API.
+client = OpenAI(base_url=BASE_URL, api_key="not-needed")
+
 
 def get_staged_diff():
     """
@@ -39,10 +43,6 @@ def generate_commit_message(diff):
 
     Returns the generated message as a string, or None on failure.
     """
-    # Point the OpenAI client at our local llama-server instead
-    # of OpenAI's API.
-    client = OpenAI(base_url=BASE_URL, api_key="not-needed")
-
     try:
         response = client.chat.completions.create(
             model=MODEL_NAME,
@@ -52,7 +52,7 @@ def generate_commit_message(diff):
                     "role": "system",
                     "content": "You are an expert software engineer.",
                 },
-                # System message sets the persona and behavior.
+                # User message provides the task and input (the diff).
                 {
                     "role": "user",
                     "content": (
