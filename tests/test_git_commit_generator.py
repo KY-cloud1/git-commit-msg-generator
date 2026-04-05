@@ -38,7 +38,7 @@ def test_get_staged_diff_handles_empty_output():
 def test_generate_commit_message_success():
     expected_message = "feat: add feature"
 
-    with patch("main.OpenAI") as mock_openai:
+    with patch("git_commit_generator.OpenAI") as mock_openai:
         mock_client = MagicMock()
         mock_openai.return_value = mock_client
 
@@ -52,7 +52,7 @@ def test_generate_commit_message_success():
 
 
 def test_generate_commit_message_sends_messages():
-    with patch("main.OpenAI") as mock_openai:
+    with patch("git_commit_generator.OpenAI") as mock_openai:
         mock_client = MagicMock()
         mock_openai.return_value = mock_client
 
@@ -68,7 +68,7 @@ def test_generate_commit_message_sends_messages():
 
 
 def test_generate_commit_message_exception():
-    with patch("main.OpenAI") as mock_openai:
+    with patch("git_commit_generator.OpenAI") as mock_openai:
         mock_client = MagicMock()
         mock_openai.return_value = mock_client
 
@@ -80,15 +80,15 @@ def test_generate_commit_message_exception():
 
 
 def test_main_with_no_staged_changes():
-    with patch("main.get_staged_diff", return_value=""):
+    with patch("git_commit_generator.get_staged_diff", return_value=""):
         with patch("builtins.print") as mock_print:
             main()
             mock_print.assert_called_with("No staged changes found.")
 
 
 def test_main_with_success():
-    with patch("main.get_staged_diff", return_value="diff"):
-        with patch("main.generate_commit_message", return_value="feat: add feature"):
+    with patch("git_commit_generator.get_staged_diff", return_value="diff"):
+        with patch("git_commit_generator.generate_commit_message", return_value="feat: add feature"):
             with patch("builtins.print") as mock_print:
                 main()
 
@@ -97,8 +97,8 @@ def test_main_with_success():
 
 
 def test_main_with_failure():
-    with patch("main.get_staged_diff", return_value="diff"):
-        with patch("main.generate_commit_message", return_value=None):
+    with patch("git_commit_generator.get_staged_diff", return_value="diff"):
+        with patch("git_commit_generator.generate_commit_message", return_value=None):
             with patch("builtins.print") as mock_print:
                 main()
 
